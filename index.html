@@ -1144,7 +1144,11 @@ canvas{max-width:100%;}
         <div class="form-section-title">Project Information</div>
         <div class="form-grid">
           <div class="field"><label>Project Name <span class="req">*</span></label><input type="text" id="projName"><div class="field-error">Project name is required.</div></div>
-          <div class="field"><label>Client <span class="req">*</span></label><select id="projClient"></select><div class="field-error">Client is required.</div></div>
+          <div class="field"><label>Client / Brand <span class="req">*</span></label><input type="text" id="projClientName" list="projClientList" placeholder="Type client or brand name" autocomplete="off"><input type="hidden" id="projClient"><datalist id="projClientList"></datalist><div class="field-error">Client is required.</div><div class="cell-sub" id="projClientHint" style="margin-top:5px;"></div></div>
+        </div>
+        <div class="form-grid" id="projNewClientFields" style="display:none;">
+          <div class="field"><label>Contact Name (optional)</label><input type="text" id="projContact" placeholder="e.g. Ali"></div>
+          <div class="field"><label>Phone / WhatsApp (optional)</label><input type="text" id="projPhone" placeholder="e.g. 0300 1234567"></div>
         </div>
         <div class="field"><label>Services</label><div class="chip-select" id="projServiceChips"></div></div>
 
@@ -1407,906 +1411,8 @@ function uid(prefix){ return prefix + '_' + Date.now().toString(36) + Math.rando
    DEMO DATA SEED
    ========================================================================== */
 function seedDemoData(){
-  /* Initial data: your real clients & projects (taken from your dashboard video). */
-  const db = {
-  "clients": [
-    {
-      "id": "c1",
-      "name": "Munazza",
-      "company": "dry delights",
-      "email": "munazzazohaib79@gmail.com",
-      "phone": "+92 335 5950064",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Business",
-      "notes": "",
-      "createdAt": "2026-09-12"
-    },
-    {
-      "id": "c2",
-      "name": "sulman",
-      "company": "burger star",
-      "email": "",
-      "phone": "+92 336 7362747",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Business",
-      "notes": "",
-      "createdAt": "2026-09-01"
-    },
-    {
-      "id": "c3",
-      "name": "jameel",
-      "company": "ashu and mama organics",
-      "email": "",
-      "phone": "+92 304 1304444",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Business",
-      "notes": "",
-      "createdAt": "2026-09-03"
-    },
-    {
-      "id": "c4",
-      "name": "wasif",
-      "company": "zamana",
-      "email": "",
-      "phone": "+92 309 1164779",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Individual",
-      "notes": "",
-      "createdAt": "2026-09-13"
-    },
-    {
-      "id": "c5",
-      "name": "waseem",
-      "company": "waseem women boutique",
-      "email": "",
-      "phone": "+92 300 4297985",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Business",
-      "notes": "",
-      "createdAt": "2026-09-19"
-    },
-    {
-      "id": "c6",
-      "name": "aayzie",
-      "company": "scenturiesbyaayzie",
-      "email": "",
-      "phone": "+92 320 4423269",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Individual",
-      "notes": "",
-      "createdAt": "2026-09-21"
-    },
-    {
-      "id": "c7",
-      "name": "badar",
-      "company": "zarwalkcollection",
-      "email": "",
-      "phone": "+92 305 4814036",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Business",
-      "notes": "",
-      "createdAt": "2026-09-27"
-    },
-    {
-      "id": "c8",
-      "name": "nova tools",
-      "company": "nova tools",
-      "email": "",
-      "phone": "",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Individual",
-      "notes": "",
-      "createdAt": "2026-09-27"
-    },
-    {
-      "id": "c9",
-      "name": "waseem",
-      "company": "Footeaze",
-      "email": "",
-      "phone": "+923221494464",
-      "website": "",
-      "instagram": "",
-      "facebook": "",
-      "type": "Business",
-      "notes": "",
-      "createdAt": "2026-10-08"
-    }
-  ],
-  "projects": [
-    {
-      "id": "p1",
-      "name": "Dry delights",
-      "clientId": "c1",
-      "services": [
-        "Graphic Design",
-        "Social Media Management",
-        "Paid Ads Management"
-      ],
-      "startDate": "2026-09-12",
-      "endDate": "2026-10-12",
-      "actualEndDate": "",
-      "totalAmount": 8000,
-      "paidAmount": 8000,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-12",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-10-12",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p2",
-      "name": "burger star",
-      "clientId": "c2",
-      "services": [
-        "Graphic Design",
-        "Social Media Management"
-      ],
-      "startDate": "2026-09-01",
-      "endDate": "2026-10-01",
-      "actualEndDate": "",
-      "totalAmount": 10000,
-      "paidAmount": 10000,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-01",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-10-01",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p3",
-      "name": "Ashu and mama organics",
-      "clientId": "c3",
-      "services": [
-        "Graphic Design",
-        "Social Media Management"
-      ],
-      "startDate": "2026-09-03",
-      "endDate": "2026-10-03",
-      "actualEndDate": "",
-      "totalAmount": 5000,
-      "paidAmount": 5000,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-03",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-10-03",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p4",
-      "name": "Zamana",
-      "clientId": "c4",
-      "services": [
-        "Graphic Design",
-        "Social Media Management",
-        "Paid Ads Management"
-      ],
-      "startDate": "2026-09-13",
-      "endDate": "2026-10-13",
-      "actualEndDate": "",
-      "totalAmount": 14000,
-      "paidAmount": 10500,
-      "status": "In Progress",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-13",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Final Delivery",
-          "date": "",
-          "done": false
-        }
-      ]
-    },
-    {
-      "id": "p5",
-      "name": "burger star menu design",
-      "clientId": "c2",
-      "services": [
-        "Other"
-      ],
-      "startDate": "2026-09-12",
-      "endDate": "2026-09-14",
-      "actualEndDate": "",
-      "totalAmount": 2000,
-      "paidAmount": 2000,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-12",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-09-14",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p6",
-      "name": "zamana shopify store SEO",
-      "clientId": "c4",
-      "services": [
-        "Other"
-      ],
-      "startDate": "2026-09-17",
-      "endDate": "2026-09-20",
-      "actualEndDate": "",
-      "totalAmount": 2500,
-      "paidAmount": 2500,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-17",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-09-20",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p7",
-      "name": "Dry delights website SEO",
-      "clientId": "c1",
-      "services": [
-        "Other"
-      ],
-      "startDate": "2026-09-17",
-      "endDate": "2026-09-21",
-      "actualEndDate": "",
-      "totalAmount": 2000,
-      "paidAmount": 2000,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-17",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-09-21",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p8",
-      "name": "waseem women boutique",
-      "clientId": "c5",
-      "services": [
-        "Graphic Design",
-        "Social Media Management",
-        "Paid Ads Management"
-      ],
-      "startDate": "2026-09-19",
-      "endDate": "2026-10-19",
-      "actualEndDate": "",
-      "totalAmount": 18000,
-      "paidAmount": 4000,
-      "status": "On Hold",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-19",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Final Delivery",
-          "date": "",
-          "done": false
-        }
-      ]
-    },
-    {
-      "id": "p9",
-      "name": "scenturies",
-      "clientId": "c6",
-      "services": [
-        "Graphic Design",
-        "Social Media Management",
-        "Paid Ads Management"
-      ],
-      "startDate": "2026-09-21",
-      "endDate": "2026-10-21",
-      "actualEndDate": "",
-      "totalAmount": 18000,
-      "paidAmount": 9000,
-      "status": "In Progress",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-21",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Final Delivery",
-          "date": "",
-          "done": false
-        }
-      ]
-    },
-    {
-      "id": "p10",
-      "name": "zamana shopify store",
-      "clientId": "c4",
-      "services": [
-        "shopify store management"
-      ],
-      "startDate": "2026-09-21",
-      "endDate": "",
-      "actualEndDate": "",
-      "totalAmount": 1000,
-      "paidAmount": 1000,
-      "status": "In Progress",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-21",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Final Delivery",
-          "date": "",
-          "done": false
-        }
-      ]
-    },
-    {
-      "id": "p11",
-      "name": "scenturies",
-      "clientId": "c6",
-      "services": [
-        "website optimization"
-      ],
-      "startDate": "2026-09-22",
-      "endDate": "2026-09-27",
-      "actualEndDate": "",
-      "totalAmount": 3000,
-      "paidAmount": 3000,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-22",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-09-27",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p12",
-      "name": "zarwalkcollection",
-      "clientId": "c7",
-      "services": [
-        "Website Development"
-      ],
-      "startDate": "2026-09-27",
-      "endDate": "2026-10-02",
-      "actualEndDate": "",
-      "totalAmount": 10000,
-      "paidAmount": 10000,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-27",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-10-02",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p13",
-      "name": "AI AD",
-      "clientId": "c8",
-      "services": [],
-      "startDate": "2026-09-27",
-      "endDate": "2026-10-01",
-      "actualEndDate": "",
-      "totalAmount": 300,
-      "paidAmount": 300,
-      "status": "Completed",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-09-27",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": true
-        },
-        {
-          "title": "Final Delivery",
-          "date": "2026-10-01",
-          "done": true
-        }
-      ]
-    },
-    {
-      "id": "p14",
-      "name": "Footeaze",
-      "clientId": "c9",
-      "services": [
-        "Graphic Design",
-        "Social Media Management",
-        "Paid Ads Management"
-      ],
-      "startDate": "2026-10-08",
-      "endDate": "2026-11-08",
-      "actualEndDate": "",
-      "totalAmount": 14000,
-      "paidAmount": 0,
-      "status": "In Progress",
-      "description": "",
-      "requirements": "",
-      "deliverables": "",
-      "revisionNotes": "",
-      "internalNotes": "",
-      "links": {
-        "website": "",
-        "figma": "",
-        "drive": "",
-        "github": "",
-        "live": ""
-      },
-      "timeline": [
-        {
-          "title": "Project Started",
-          "date": "2026-10-08",
-          "done": true
-        },
-        {
-          "title": "Initial Concepts",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Client Review",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Revisions",
-          "date": "",
-          "done": false
-        },
-        {
-          "title": "Final Delivery",
-          "date": "",
-          "done": false
-        }
-      ]
-    }
-  ],
-  "payments": [],
-  "tasks": [],
-  "documents": [],
-  "services": [
-    "Graphic Design",
-    "Brand Identity",
-    "Social Media Management",
-    "Paid Ads Management",
-    "Website Development",
-    "AI Chatbot",
-    "AI Automation",
-    "Creative Content",
-    "Other",
-    "shopify store management",
-    "website optimization"
-  ],
-  "settings": {
-    "agencyName": "MBS AGENCY",
-    "agencyType": "Digital Marketing Agency",
-    "tagline": "DESIGN. DEVELOP. AUTOMATE.",
-    "owner": "Muhammad",
-    "theme": "light",
-    "sidebarCollapsed": false
-  }
-};
+  /* Public build: no client data is stored inside this file. Use Settings > Data Management > Import Data. */
+  const db = emptyDB();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
   return db;
 }
@@ -3144,7 +2250,7 @@ document.getElementById('saveClientBtn').addEventListener('click', ()=>{
 /* -------- PROJECT MODAL -------- */
 function populateSelects(){
   const clientOptions = DB.clients.map(c=>`<option value="${c.id}">${escapeHtml(c.company||c.name)}</option>`).join('');
-  ['projClient','payClient','taskClient','docClient'].forEach(id=>{
+  ['payClient','taskClient','docClient'].forEach(id=>{
     const el = document.getElementById(id);
     const placeholder = id==='projClient' ? '<option value="">Select client…</option>' : '<option value="">—</option>';
     el.innerHTML = placeholder + clientOptions;
@@ -3176,7 +2282,7 @@ function openProjectModal(id){
     document.getElementById('saveProjectBtn').textContent = 'Save Changes';
     document.getElementById('projectId').value = p.id;
     document.getElementById('projName').value = p.name;
-    document.getElementById('projClient').value = p.clientId;
+    { const pc = getClient(p.clientId); document.getElementById('projClient').value = p.clientId; document.getElementById('projClientName').value = pc ? (pc.company || pc.name) : ''; }
     document.getElementById('projStart').value = p.startDate;
     document.getElementById('projEnd').value = p.endDate;
     document.getElementById('projActualEnd').value = p.actualEndDate||'';
@@ -3201,6 +2307,7 @@ function openProjectModal(id){
     form.reset(); document.getElementById('projectId').value='';
     document.getElementById('projStart').value = todayISO();
   }
+  syncProjectClientField();
   updateProjectCalcBox();
   openModal('project');
 }
@@ -3222,7 +2329,7 @@ document.getElementById('saveProjectBtn').addEventListener('click', ()=>{
   clearErrors(form);
   let valid = true;
   const nameEl = document.getElementById('projName'); if(!nameEl.value.trim()){ setFieldError(nameEl,true); valid=false; }
-  const clientEl = document.getElementById('projClient'); if(!clientEl.value){ setFieldError(clientEl,true); valid=false; }
+  const clientNameEl = document.getElementById('projClientName'); if(!clientNameEl.value.trim()){ setFieldError(clientNameEl,true); valid=false; }
   const totalEl = document.getElementById('projTotal'); const total = Number(totalEl.value);
   if(!totalEl.value || total<0){ setFieldError(totalEl,true); valid=false; }
   const paidEl = document.getElementById('projPaid'); const paid = Number(paidEl.value)||0;
@@ -3232,11 +2339,20 @@ document.getElementById('saveProjectBtn').addEventListener('click', ()=>{
   if(paid > total){ document.getElementById('projPaidError').style.display='block'; paidEl.closest('.field').classList.add('has-error'); valid=false; }
   if(!valid) return;
 
+  /* Client is picked by typing: existing client is reused, a new one is created automatically. */
+  let clientId = document.getElementById('projClient').value, newClientCreated = false;
+  if(!clientId || !getClient(clientId)){
+    const typed = clientNameEl.value.trim();
+    const contact = document.getElementById('projContact').value.trim(), phone = document.getElementById('projPhone').value.trim();
+    const nc = { id:uid('c'), name:contact || typed, company:typed, email:'', phone, website:'', instagram:'', facebook:'', type:'Business', notes:'', createdAt:todayISO() };
+    DB.clients.push(nc); clientId = nc.id; newClientCreated = true;
+  }
+
   const services = Array.from(document.querySelectorAll('#projServiceChips .chip.selected')).map(c=>c.dataset.service);
   const id = document.getElementById('projectId').value || uid('p');
   const existing = getProject(id);
   const data = {
-    id, name:nameEl.value.trim(), clientId:clientEl.value, services,
+    id, name:nameEl.value.trim(), clientId, services,
     startDate:startEl.value, endDate:endEl.value, actualEndDate:document.getElementById('projActualEnd').value,
     totalAmount:total, paidAmount:paid, status:document.getElementById('projStatus').value,
     description:document.getElementById('projDescription').value.trim(), requirements:document.getElementById('projRequirements').value.trim(),
@@ -3247,7 +2363,7 @@ document.getElementById('saveProjectBtn').addEventListener('click', ()=>{
   };
   if(existing && existing.retainerId){ data.retainerId = existing.retainerId; data.period = existing.period; }
   const idx = DB.projects.findIndex(p=>p.id===id);
-  if(idx>-1){ DB.projects[idx]=data; toast('Project updated','success'); } else { DB.projects.push(data); toast('Project created','success'); }
+  if(idx>-1){ DB.projects[idx]=data; toast('Project updated','success'); } else { DB.projects.push(data); toast(newClientCreated ? 'Project and new client created' : 'Project created','success'); }
   saveDB(); closeAllModals(); populateSelects(); renderAllBadges();
   renderPage(state.currentPage);
   if(state.currentPage==='project-detail') renderProjectDetail();
@@ -3534,7 +2650,26 @@ document.getElementById('leadSource').innerHTML = LEAD_SOURCES.map(c=>'<option>'
 document.getElementById('leadStage').innerHTML = LEAD_STAGES.map(c=>'<option>' + c + '</option>').join('');
 document.getElementById('rtDay').innerHTML = Array.from({length:28}, (_,i)=>'<option value="' + (i+1) + '">' + (i+1) + '</option>').join('');
 
+function findClientByTyped(text){
+  const q = String(text || '').trim().toLowerCase(); if(!q) return null;
+  let m = DB.clients.filter(c=>(c.company || '').trim().toLowerCase() === q); if(m.length) return m[0];
+  m = DB.clients.filter(c=>(c.name || '').trim().toLowerCase() === q); return m.length === 1 ? m[0] : null;
+}
+function syncProjectClientField(){
+  const input = document.getElementById('projClientName'), hid = document.getElementById('projClient');
+  const hint = document.getElementById('projClientHint'), extra = document.getElementById('projNewClientFields');
+  const typed = input.value.trim();
+  const cur = getClient(hid.value);
+  const match = (cur && (cur.company || cur.name).trim().toLowerCase() === typed.toLowerCase()) ? cur : findClientByTyped(typed);
+  hid.value = match ? match.id : '';
+  extra.style.display = (!match && typed) ? '' : 'none';
+  hint.textContent = !typed ? '' : match ? ('Existing client: ' + match.name + (match.phone ? ' · ' + match.phone : '')) : 'New client - will be created automatically';
+  hint.style.color = (!match && typed) ? 'var(--primary)' : '';
+}
+document.getElementById('projClientName').addEventListener('input', syncProjectClientField);
 function populateNewSelects(){
+  const dl = document.getElementById('projClientList');
+  if(dl) dl.innerHTML = DB.clients.map(c=>'<option value="' + escapeHtml(c.company || c.name) + '" label="' + escapeHtml(c.name) + '"></option>').join('');
   const rc = document.getElementById('rtClient');
   if(rc) rc.innerHTML = '<option value="">Select client…</option>' + DB.clients.map(c=>'<option value="' + c.id + '">' + escapeHtml(c.company || c.name) + '</option>').join('');
   const chips = document.getElementById('rtServiceChips');
@@ -3899,7 +3034,10 @@ function chatClient(id){
 }
 function newProjectForClient(id){
   openProjectModal(null);
+  const c = getClient(id);
   document.getElementById('projClient').value = id;
+  document.getElementById('projClientName').value = c ? (c.company || c.name) : '';
+  syncProjectClientField();
 }
 function renderClientDetail(){
   const c = getClient(state.currentClientDetailId);
