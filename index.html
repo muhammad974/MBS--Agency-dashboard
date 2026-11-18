@@ -3436,7 +3436,9 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "",
   appId: "PASTE_APP_ID"
 };
-const CLOUD_ENABLED = !!FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('PASTE') !== 0;
+/* API_MODE = true makes the dashboard use the built-in /api backend (password login) instead of Firebase. */
+const API_MODE = true;
+const CLOUD_ENABLED = API_MODE || (!!FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('PASTE') !== 0);
 let fbAuth = null, fbDb = null, fbDocRef = null, fbUnsub = null, lastCloudJSON = '', pushTimer = null;
 
 function setSyncStatus(kind, text){
@@ -3456,7 +3458,7 @@ function pushToCloud(){
   if(!fbDocRef) return Promise.resolve();
   const json = JSON.stringify(DB);
   lastCloudJSON = json;
-  return fbDocRef.set({ data: json, updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+  return fbDocRef.set({ data: json, updatedAt: (window.firebase && firebase.firestore) ? firebase.firestore.FieldValue.serverTimestamp() : Date.now() })
     .then(()=>{ if(!pushTimer) setSyncStatus('ok','Synced'); })
     .catch(err=>{ console.error(err); setSyncStatus('err','Sync failed'); toast('Cloud sync failed: ' + (err.code || err.message), 'error'); });
 }
@@ -3488,7 +3490,8 @@ function setLoginBusy(busy){
 function friendlyAuthError(err){
   switch(err && err.code){
     case 'auth/invalid-credential': case 'auth/wrong-password': case 'auth/user-not-found': case 'auth/invalid-email':
-      return 'Email ya password galat hai.';
+      return API_MODE ? 'Password galat hai.' : 'Email ya password galat hai.';
+    case 'auth/expired': return 'Session khatam ho gaya. Dobara login karein.';
     case 'auth/too-many-requests': return 'Bohat zyada koshishein. Thori der baad dobara try karein.';
     case 'auth/network-request-failed': return 'Internet connection check karein.';
     case 'permission-denied': return 'Firestore rules set nahi hain (permission denied). Setup steps dobara check karein.';
@@ -3558,7 +3561,73 @@ async function logout(){
   localStorage.removeItem(STORAGE_KEY);
   location.reload();
 }
+function initCloudApi(){
+  const TOKEN_KEY = 'mbs_api_token';
+  let authCb = null, lastVersion = 0;
+  const readToken = ()=>{
+    try{
+      const t = localStorage.getItem(TOKEN_KEY); if(!t) return '';
+      const exp = JSON.parse(atob(t.split('.')[0].replace(/-/g,'+').replace(/_/g,'/'))).exp;
+      return exp > Date.now() ? t : '';
+    }catch(e){ return ''; }
+  };
+  async function api(method, path, body){
+    const headers = {'Content-Type':'application/json'}; const token = readToken(); if(token) headers.Authorization = 'Bearer ' + token;
+    let res;
+    try{ res = await fetch(path, {method, headers, body: body ? JSON.stringify(body) : undefined, cache:'no-store'}); }
+    catch(e){ const er = new Error('Internet ya server tak nahi pahunch saka.'); er.code = 'auth/network-request-failed'; throw er; }
+    let json = {}; try{ json = await res.json(); }catch(e){}
+    if(res.status === 401){
+      localStorage.removeItem(TOKEN_KEY);
+      const er = new Error(json.error || 'Unauthorized');
+      if(path === '/api/login'){ er.code = 'auth/invalid-credential'; }
+      else { er.code = 'auth/expired'; if(authCb) authCb(null); }
+      throw er;
+    }
+    if(res.status === 429){ const er = new Error(json.error || 'Too many attempts'); er.code = 'auth/too-many-requests'; throw er; }
+    if(!res.ok){ const er = new Error(json.error || ('Server error ' + res.status)); er.code = 'api/' + res.status; throw er; }
+    return json;
+  }
+  const docRef = {
+    async get(){ const j = await api('GET','/api/data'); lastVersion = j.updatedAt || 0; return { exists:!!j.data, data:()=>({data:j.data}) }; },
+    async set(v){ const j = await api('PUT','/api/data',{data:v.data}); lastVersion = j.updatedAt || lastVersion; },
+    onSnapshot(cb, errCb){
+      let stopped = false;
+      const poll = async ()=>{
+        if(stopped || document.hidden) return;
+        try{
+          const j = await api('GET','/api/data');
+          if(j.updatedAt && j.updatedAt !== lastVersion){ lastVersion = j.updatedAt; cb({ exists:!!j.data, metadata:{hasPendingWrites:false}, data:()=>({data:j.data}) }); }
+        }catch(e){ if(errCb) errCb(e); }
+      };
+      const timer = setInterval(poll, 15000);
+      const onVis = ()=>{ if(!document.hidden) poll(); };
+      document.addEventListener('visibilitychange', onVis);
+      return ()=>{ stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); };
+    }
+  };
+  fbDb = { collection:()=>({ doc:()=>docRef }) };
+  fbAuth = {
+    onAuthStateChanged(cb){ authCb = cb; setTimeout(()=>cb(readToken() ? {uid:'owner'} : null), 0); },
+    async signInWithEmailAndPassword(email, password){ const j = await api('POST','/api/login',{password}); localStorage.setItem(TOKEN_KEY, j.token); authCb({uid:'owner'}); },
+    async signOut(){ localStorage.removeItem(TOKEN_KEY); if(authCb) authCb(null); },
+    async sendPasswordResetEmail(){}
+  };
+  showAuth(true);
+  document.getElementById('authEmail').value = 'owner@mbs.local';
+  document.getElementById('authForm').noValidate = true;
+  document.getElementById('authEmail').closest('.field').style.display = 'none';
+  document.getElementById('authForgot').style.display = 'none';
+  document.querySelector('#authForm .sub').textContent = 'Enter your dashboard password.';
+  document.getElementById('logoutBtn').style.display = 'flex';
+  document.getElementById('authForm').addEventListener('submit', submitLogin);
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  window.addEventListener('offline', ()=> setSyncStatus('err','Offline'));
+  window.addEventListener('online', ()=>{ if(fbDocRef) scheduleCloudPush(); });
+  fbAuth.onAuthStateChanged(handleAuthChange);
+}
 function initCloud(){
+  if(API_MODE){ initCloudApi(); return; }
   if(!CLOUD_ENABLED){ setSyncStatus('ok',''); document.getElementById('syncStatus').style.display = 'none'; return; }
   showAuth(true);
   if(!window.firebase){ authMsg('Firebase load nahi ho saka. Internet check karke page refresh karein.'); return; }
