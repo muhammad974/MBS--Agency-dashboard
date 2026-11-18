@@ -1,11 +1,10 @@
 // POST /api/login  { password }  ->  { token }
 const crypto = require('crypto');
-const { send, readBody, sign, redis } = require('./_lib');
+const { send, readBody, sign, redis, getPassword } = require('./_lib');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return send(res, 405, { error: 'Method not allowed' });
-  const password = process.env.DASHBOARD_PASSWORD;
-  if (!password) return send(res, 500, { error: 'DASHBOARD_PASSWORD Vercel Environment Variables mein set nahi hai.' });
+  const password = getPassword();
 
   // Limit guesses: 10 attempts per 15 minutes per IP.
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';

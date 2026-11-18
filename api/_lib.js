@@ -1,9 +1,15 @@
 // Shared helpers for the MBS dashboard backend (Vercel serverless functions).
 const crypto = require('crypto');
 
+// Password: the Vercel variable DASHBOARD_PASSWORD wins if it is set, otherwise this built-in one is used.
+const DEFAULT_PASSWORD = 'muhammad54321_';
+function getPassword() {
+  return process.env.DASHBOARD_PASSWORD || DEFAULT_PASSWORD;
+}
+
 function getSecret() {
   return process.env.AUTH_SECRET ||
-    crypto.createHash('sha256').update('mbs:' + (process.env.DASHBOARD_PASSWORD || '')).digest('hex');
+    crypto.createHash('sha256').update('mbs:' + getPassword()).digest('hex');
 }
 
 function sign(payload) {
@@ -64,4 +70,4 @@ async function readBody(req) {
   return raw ? JSON.parse(raw) : {};
 }
 
-module.exports = { sign, verify, authed, redis, send, readBody };
+module.exports = { sign, verify, authed, redis, send, readBody, getPassword };
